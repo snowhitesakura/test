@@ -1,0 +1,40 @@
+# test
+
+
+import UIKit
+
+class LoginViewController: UIViewController {
+
+    @IBOutlet weak var emailTextFiled: UITextField!
+    @IBOutlet weak var passwordTextField: UITextField!
+    
+    
+    
+    
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        let dismissKeyboard = UITapGestureRecognizer(target: self, action: #selector(ChatRoomCollectionViewController.dismissKeyboard(tap:)))
+        dismissKeyboard.numberOfTapsRequired = 1
+        view.addGestureRecognizer(dismissKeyboard)
+    }
+    func dismissKeyboard(tap: UITapGestureRecognizer){
+        view.endEditing(true)
+    }
+
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+
+    @IBAction func logInButton(_ sender: UIButton) {
+        guard let email = emailTextFiled.text, !email.isEmpty,
+            let password = passwordTextField.text, !password.isEmpty else{
+                return
+        }
+        //logIn
+        DataService.dataService.logIn(email: email, password: password)
+        
+    }
+
+}
