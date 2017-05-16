@@ -1,0 +1,19 @@
+# test
+
+import UIKit
+
+class ChatViewController: UIViewController {
+    
+    var roomId: String!
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        print(roomId)
+
+        // Do any additional setup after loading the view.
+    }
+
+  
+
+
+}
