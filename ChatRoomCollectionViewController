@@ -1,0 +1,110 @@
+# test
+
+//  
+
+
+import UIKit
+import FirebaseAuth
+import FirebaseStorage
+
+
+class ChatRoomCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UINavigationControllerDelegate {
+    
+    var rooms = [Room]()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        
+        DataService.dataService.fetchDataFromServer{ (room) in
+            
+            self.rooms.append(room)
+            let indexPath = IndexPath(row: self.rooms.count - 1, section: 0)
+        self.collectionView?.insertItems(at: [indexPath])
+        }
+        
+        
+        let dismissKeyboard = UITapGestureRecognizer(target: self, action: #selector(ChatRoomCollectionViewController.dismissKeyboard(tap:)))
+        dismissKeyboard.numberOfTapsRequired = 1
+        view.addGestureRecognizer(dismissKeyboard)
+    }
+
+    
+    func dismissKeyboard(tap: UITapGestureRecognizer){
+        view.endEditing(true)
+    }
+
+    
+    
+    
+    @IBAction func logOut(_ sender: Any) {
+        let actionSheetController = UIAlertController(title: "Please select", message: "Option to select", preferredStyle: UIAlertControllerStyle.actionSheet)
+        let cancelActionButton = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel) {(action) in
+            print("Cancel")
+        }
+        actionSheetController.addAction(cancelActionButton)
+        
+        let profileActionButton = UIAlertAction(title: "Profile", style: UIAlertActionStyle.default) {(action) in
+            let profileVC = self.storyboard?.instantiateViewController(withIdentifier: "EditProfile") as! ProfileTableViewController
+            self.navigationController?.pushViewController(profileVC, animated: true)
+            
+        }
+        
+        actionSheetController.addAction(profileActionButton)
+        let logoutAction = UIAlertAction(title: "LogOut", style: UIAlertActionStyle.default) {(action) in
+            print("Log Out")
+            self.logOutTapped()
+        }
+        
+        actionSheetController.addAction(logoutAction)
+        self.present(actionSheetController, animated: true, completion: nil)
+        
+        
+    }
+    func logOutTapped(){
+        DataService.dataService.logout()
+    }
+    
+   
+    // MARK: UICollectionViewDataSource
+
+
+
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return rooms.count
+    }
+
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "roomCell", for: indexPath as IndexPath) as! RoomCollectionViewCell
+        let room = rooms[indexPath.row]
+        
+        cell.configureCell(room: room)
+        return cell
+
+    }
+    
+    func collectionView(_collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPAth: NSIndexPath) ->CGSize {
+        return CGSize(width: view.frame.size.width / 2 - 5, height: view.frame.size.width / 2 - 5)
+    }
+    
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "ChatSegue"
+        { print("123")
+            
+            let cell = sender as! RoomCollectionViewCell
+            let indexPath = self.collectionView?.indexPath(for: cell)
+            let room = rooms[indexPath!.item]
+            let chatViewController = segue.destination as! ChatViewController
+            chatViewController.roomId = room.id
+            
+        
+            
+            
+        }
+    }
+    
+   
+
+   
+}
